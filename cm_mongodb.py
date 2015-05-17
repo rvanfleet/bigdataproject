@@ -1,6 +1,7 @@
 import subprocess
 import pymongo
 from pymongo import MongoClient
+import datetime
 
 class db:
 
@@ -32,14 +33,29 @@ class db:
         self.database = client[db_name]
         self.jobs = self.database.jobs
 
-    def insertJob(self, job_name, input_filename="", output_filename=""):
+    def insertJob(self, job_name, input_filename="", output_filename="", start_time=str(datetime.datetime.now()), end_time=str(datetime.datetime.now())):
 
         if self.database is not None:
 
             job = {"job_name"        : job_name,
                    "input_filename"  : input_filename,
                    "output_filename" : output_filename,
+                   "start_time"      : start_time,
+                   "end_time"        : end_time
                    }
+
+            job_id = self.jobs.insert_one(job).inserted_id
+
+            return job_id
+
+        else:
+
+            print "Please connect to a database before running this function"
+            return -1
+
+    def insertJobObject(self, job):
+
+        if self.database is not None:
 
             job_id = self.jobs.insert_one(job).inserted_id
 
@@ -95,6 +111,17 @@ class db:
             #Return number of results of the query given the search parameters
             else:
                 return self.jobs.find(({key_name: value})).count()
+
+        else:
+
+            print "Please connect to a database before running this function"
+            return -1
+
+    def updateJobEndTime(self, job_id, end_time=str(datetime.datetime.now())):
+
+        if self.database is not None:
+
+            self.jobs.update({"_id" : job_id}, {"$set": {"end_time" : end_time}}, upsert=False)
 
         else:
 
