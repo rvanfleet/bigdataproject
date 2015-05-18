@@ -10,9 +10,8 @@ class db:
 
     def startMongo(self, db_path="/data/db/", port="27017", log_path="/var/log/mongod"):
 
-        #Remove dbPath and create an empty one
+        #Create the data path in case it does not already exist
         subprocess.call(["mkdir", "/data"])
-        subprocess.call(["rm", "-r", db_path])
         subprocess.call(["mkdir", db_path])
 
         #Deploy the mongoDB
